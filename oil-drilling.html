@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>حفر بئر نفطي تفاعلي</title>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4efe6;--fg:#241d15;--panel:#e8dfce;--accent:#c4561a;--line:#bfb094;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--fg:#ede6d8;--panel:#1d222c;--accent:#f28c28;--line:#3a4252;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12151c;--fg:#ede6d8;--panel:#1d222c;--accent:#f28c28;--line:#3a4252;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Readex Pro",Tahoma,Arial,sans-serif;line-height:1.7}
+main{max-width:860px;margin:0 auto;padding:20px 16px 32px}
+h1{font-size:1.6rem;font-weight:700;margin:0 0 4px}
+p.sub{margin:0 0 16px;font-weight:300;opacity:.85}
+.scene{direction:ltr;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+svg{display:block;width:100%;height:auto}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:10px;padding:8px 14px;min-height:44px}
+button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+label{display:flex;align-items:center;gap:10px;flex:1 1 260px;margin-top:10px}
+input[type=range]{flex:1;accent-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:12px}
+.stat b{display:block;font-size:1.35rem;font-weight:700}
+.stat span{font-weight:300;font-size:.9rem}
+#msg{margin:12px 0 0;padding:10px 12px;border-radius:10px;border:1px solid var(--line);font-weight:500}
+#msg.warn{border-color:#c0392b;color:#c0392b}
+</style>
+</head>
+<body>
+<main>
+<h1>حفر بئر نفطي</h1>
+<p class="sub">شغّل الحفر وانزل عبر طبقات الأرض إلى المكمن. تحتاج طين الحفر للسيطرة على الضغط، وبطانة لتثبيت البئر، ثم تثقيب المكمن قبل الإنتاج.</p>
+
+<div class="scene">
+<svg id="svg" viewBox="0 0 800 520" role="img" aria-label="مقطع عرضي لحفر بئر نفطي عبر طبقات الأرض">
+<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd0ea"/><stop offset="1" stop-color="#f7e9c9"/></linearGradient></defs>
+<rect width="800" height="120" fill="url(#sky)"/>
+<g id="layers"></g>
+<rect x="0" y="116" width="800" height="6" fill="#4d6b3a"/>
+
+<!-- mud pit and tank -->
+<rect x="410" y="96" width="70" height="20" rx="3" fill="#8a5a2b" stroke="#4a3720" stroke-width="2"/>
+<text x="445" y="90" font-size="12" text-anchor="middle" fill="#333">حوض الطين</text>
+<rect x="620" y="52" width="80" height="64" rx="6" fill="#8fa3b5" stroke="#3d4a57" stroke-width="3"/>
+<rect id="tankfill" x="624" y="112" width="72" height="0" fill="#1b1a17"/>
+<text x="660" y="44" font-size="12" text-anchor="middle" fill="#333">خزان</text>
+<path d="M308 108 H620" stroke="#3d4a57" stroke-width="6" fill="none"/>
+<path id="pipeflow" d="M308 108 H620" stroke="#f28c28" stroke-width="2.5" stroke-dasharray="8 10" fill="none" opacity="0"/>
+
+<!-- derrick -->
+<g id="derrick" stroke="#4b5560" stroke-width="3" fill="none"></g>
+<rect x="278" y="12" width="44" height="12" fill="#c4561a"/>
+<rect x="284" y="112" width="32" height="8" fill="#3d4a57"/>
+
+<!-- well -->
+<rect id="bore" x="294" y="120" width="12" height="0" fill="#1c1410"/>
+<rect id="oilcol" x="296" y="120" width="8" height="0" fill="#0e0d0b"/>
+<line id="casL" x1="293" y1="120" x2="293" y2="120" stroke="#aeb8c2" stroke-width="3"/>
+<line id="casR" x1="307" y1="120" x2="307" y2="120" stroke="#aeb8c2" stroke-width="3"/>
+<line id="string" x1="300" y1="120" x2="300" y2="120" stroke="#cfd4d9" stroke-width="3"/>
+<line id="mudin" x1="300" y1="120" x2="300" y2="120" stroke="#e0a45f" stroke-width="2" stroke-dasharray="6 8" opacity="0"/>
+<line id="mudL" x1="296" y1="120" x2="296" y2="120" stroke="#e6b87a" stroke-width="1.5" stroke-dasharray="5 7" opacity="0"/>
+<line id="mudR" x1="304" y1="120" x2="304" y2="120" stroke="#e6b87a" stroke-width="1.5" stroke-dasharray="5 7" opacity="0"/>
+<g id="perfs" stroke="#f28c28" stroke-width="2" stroke-linecap="round"></g>
+<circle id="flash" cx="300" cy="0" r="0" fill="#ffd27a" opacity="0"/>
+<g id="bit"><polygon points="-9,-7 9,-7 5,3 0,9 -5,3" fill="#9aa3ab" stroke="#333" stroke-width="1.5"/></g>
+<g id="drops" fill="#0e0d0b"></g>
+<g transform="translate(790,0)"><text id="depthTag" x="0" y="140" font-size="13" text-anchor="end" fill="#fff"></text></g>
+</svg>
+</div>
+
+<div class="panel">
+<div class="row">
+<button id="drill" aria-pressed="false">ابدأ الحفر</button>
+<button id="mud" aria-pressed="false">طين الحفر</button>
+<button id="casing">تركيب البطانة</button>
+<button id="perf" disabled>تثقيب المكمن</button>
+<button id="prod" disabled>بدء الإنتاج</button>
+<button id="reset">إعادة</button>
+</div>
+<label>سرعة الدوران <input type="range" id="speed" min="0.5" max="3" step="0.1" value="1" aria-label="سرعة الحفر"></label>
+<p id="msg" role="status" aria-live="polite">البرج جاهز. اضغط «ابدأ الحفر».</p>
+<div class="stats">
+<div class="stat"><b id="depth">0 م</b><span>العمق</span></div>
+<div class="stat"><b id="layer">السطح</b><span>الطبقة الحالية</span></div>
+<div class="stat"><b id="rop">0 م/ث</b><span>معدل الحفر</span></div>
+<div class="stat"><b id="bbl">0</b><span>برميل منتج</span></div>
+</div>
+</div>
+</main>
+
+<script>
+const NS="http://www.w3.org/2000/svg",Y0=120,K=0.125,MAXD=2900;
+const L=[[0,400,"رمل","#d8b878",1],[400,900,"طين","#a67c52",.7],[900,1600,"حجر جيري","#b9b4a0",.4],[1600,2300,"صخر زيتي","#6b6d73",.5],[2300,2650,"مكمن النفط","#3a2a1c",.6],[2650,3000,"صخر أساس","#4a4a52",.3]];
+const $=id=>document.getElementById(id);
+const Y=d=>Y0+d*K;
+// layers
+L.forEach(l=>{
+  const r=document.createElementNS(NS,"rect");
+  r.setAttribute("x",0);r.setAttribute("y",Y(l[0]));r.setAttribute("width",800);r.setAttribute("height",(l[1]-l[0])*K);r.setAttribute("fill",l[3]);
+  $("layers").appendChild(r);
+  const t=document.createElementNS(NS,"text");
+  t.setAttribute("x",14);t.setAttribute("y",Y(l[0])+18);t.setAttribute("font-size",12);t.setAttribute("fill",l[4]>.5&&l[3]!="#6b6d73"?"#2a2018":"#f0e8da");
+  t.textContent=l[2]+" · "+l[0]+" م";$("layers").appendChild(t);
+});
+// derrick lattice
+(function(){
+  const d=$("derrick");
+  function ln(x1,y1,x2,y2){const e=document.createElementNS(NS,"line");[["x1",x1],["y1",y1],["x2",x2],["y2",y2]].forEach(a=>e.setAttribute(a[0],a[1]));d.appendChild(e)}
+  ln(250,120,285,24);ln(350,120,315,24);
+  for(let i=0;i<5;i++){const y1=120-i*19,y2=y1-19,a=250+i*7,b=350-i*7,c=250+(i+1)*7,e=350-(i+1)*7;ln(a,y1,e,y2);ln(b,y1,c,y2);ln(a,y1,b,y1)}
+})();
+let S;
+function init(){S={depth:0,drilling:false,mud:false,casing:0,kick:false,prod:false,oilTop:0,bbl:0,phase:0,off:0,drops:[],layer:-1,reached:false,perf:false,flash:0,flashY:0};$("perfs").innerHTML="";$("perf").disabled=true;
+  ["drill","mud"].forEach(i=>$(i).setAttribute("aria-pressed","false"));
+  $("drill").textContent="ابدأ الحفر";$("prod").disabled=true;$("prod").textContent="بدء الإنتاج";
+  say("البرج جاهز. اضغط «ابدأ الحفر».");}
+function say(t,w){const m=$("msg");m.textContent=t;m.className=w?"warn":""}
+function layerAt(d){for(let i=L.length-1;i>=0;i--)if(d>=L[i][0])return i;return 0}
+$("drill").onclick=()=>{
+  if(S.kick){say("أوقفنا الحفر بسبب تدفق مفاجئ. شغّل طين الحفر أولًا.",1);return}
+  if(S.depth>=MAXD){say("وصلت لأقصى عمق.");return}
+  S.drilling=!S.drilling;$("drill").setAttribute("aria-pressed",S.drilling);$("drill").textContent=S.drilling?"أوقف الحفر":"ابدأ الحفر"};
+$("mud").onclick=()=>{S.mud=!S.mud;$("mud").setAttribute("aria-pressed",S.mud);
+  if(S.mud&&S.kick){S.kick=false;S.drops=[];say("الطين الثقيل سيطر على الضغط. ركّب البطانة ثم ثقّب المكمن وابدأ الإنتاج.")}
+  else say(S.mud?"طين الحفر يدور: يبرّد البت ويرفع الفتات ويوازن الضغط.":"أوقفت الطين.")};
+$("casing").onclick=()=>{if(S.depth<50){say("احفر أولًا ثم ركّب البطانة.");return}
+  S.casing=S.depth;say("تم تركيب بطانة فولاذية حتى "+Math.round(S.casing)+" م لتثبيت جدار البئر.");check()};
+function check(){const ok=S.reached&&S.casing>=2300&&!S.kick;$("perf").disabled=!ok||S.perf;$("prod").disabled=!(ok&&S.perf)}
+$("perf").onclick=()=>{
+  if(!S.mud){say("شغّل طين الحفر أولًا للسيطرة على الضغط قبل التثقيب.",1);return}
+  S.drilling=false;$("drill").setAttribute("aria-pressed","false");$("drill").textContent="ابدأ الحفر";
+  const a=2300,b=Math.min(S.casing,2650);let h="";
+  for(let d=a+10;d<=b;d+=20){const y=Y(d);h+=`<line x1="307" y1="${y}" x2="330" y2="${y-4}"/><line x1="293" y1="${y}" x2="270" y2="${y-4}"/>`}
+  $("perfs").innerHTML=h;S.perf=true;S.flash=1;S.flashY=Y((a+b)/2);
+  say("تم التثقيب: شحنات مشكّلة فجّرت ثقوبًا في البطانة والأسمنت على مستوى المكمن، فصار النفط يقدر يدخل البئر.");check()};
+$("prod").onclick=()=>{S.prod=!S.prod;S.drilling=false;$("drill").setAttribute("aria-pressed","false");$("drill").textContent="ابدأ الحفر";
+  $("prod").textContent=S.prod?"إيقاف الإنتاج":"بدء الإنتاج";if(S.prod){S.oilTop=S.depth;say("النفط يصعد في البئر باتجاه الخزان.")}};
+$("reset").onclick=()=>{init()};
+let last=performance.now();
+const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+function set(id,a){const e=$(id);for(const k in a)e.setAttribute(k,a[k])}
+function frame(t){
+  const dt=Math.min((t-last)/1000,.1);last=t;const sp=+$("speed").value;
+  const li=layerAt(S.depth);let rop=0;
+  if(S.drilling){rop=L[li][4]*sp*60*(S.mud?1:.8);S.depth=Math.min(MAXD,S.depth+rop*dt);S.phase+=dt*sp*12;
+    const n=layerAt(S.depth);
+    if(n!==S.layer){S.layer=n;say("دخلت طبقة: "+L[n][2]);if(n===4)S.reached=true}
+    if(S.depth>=2300&&!S.mud&&!S.kick){S.kick=true;S.drilling=false;$("drill").setAttribute("aria-pressed","false");$("drill").textContent="ابدأ الحفر";say("تدفق مفاجئ! ضغط المكمن أعلى من الضغط في البئر. شغّل طين الحفر.",1)}
+    if(S.depth>=MAXD){S.drilling=false;$("drill").setAttribute("aria-pressed","false");$("drill").textContent="ابدأ الحفر"}
+    check()}
+  const by=Y(S.depth);
+  set("bore",{height:S.depth*K,fill:S.mud?"#8a5a2b":"#1c1410"});
+  set("string",{y2:by-7});
+  set("casL",{y2:Y(S.casing)});set("casR",{y2:Y(S.casing)});
+  ["mudin","mudL","mudR"].forEach(i=>{set(i,{y2:by-7,opacity:S.mud&&S.depth>0?1:0})});
+  if(S.mud&&!reduce){S.off+=dt*40*sp;$("mudin").style.strokeDashoffset=-S.off;$("mudL").style.strokeDashoffset=S.off;$("mudR").style.strokeDashoffset=S.off}
+  $("bit").setAttribute("transform",`translate(300 ${by}) scale(${Math.cos(S.phase)} 1)`);
+  if(S.flash>0){set("flash",{cy:S.flashY,r:6+40*(1-S.flash),opacity:S.flash});S.flash=Math.max(0,S.flash-dt*2)}else set("flash",{opacity:0});
+  // production
+  if(S.prod){const top=Y(S.oilTop);S.oilTop=Math.max(0,S.oilTop-dt*600);
+    set("oilcol",{y:Y(S.oilTop),height:Math.max(0,by-Y(S.oilTop))});
+    if(S.oilTop<=0){S.bbl=Math.min(5000,S.bbl+dt*sp*80);$("pipeflow").setAttribute("opacity",1);$("pipeflow").style.strokeDashoffset=-(S.off+=dt*30)}}
+  else{set("oilcol",{height:0});$("pipeflow").setAttribute("opacity",0)}
+  const h=Math.min(60,S.bbl/5000*60);set("tankfill",{y:112-h,height:h});
+  // drops
+  if(S.kick&&Math.random()<.7)S.drops.push({x:300,y:116,vx:(Math.random()-.5)*90,vy:-120-Math.random()*90});
+  S.drops=S.drops.filter(d=>{d.vy+=320*dt;d.x+=d.vx*dt;d.y+=d.vy*dt;return d.y<118});
+  $("drops").innerHTML=S.drops.map(d=>`<circle cx="${d.x.toFixed(1)}" cy="${d.y.toFixed(1)}" r="3"/>`).join("");
+  $("depth").textContent=Math.round(S.depth).toLocaleString("ar-SA")+" م";
+  $("layer").textContent=S.depth<1?"السطح":L[layerAt(S.depth)][2];
+  $("rop").textContent=Math.round(rop).toLocaleString("ar-SA")+" م/ث";
+  $("bbl").textContent=Math.round(S.bbl).toLocaleString("ar-SA");
+  requestAnimationFrame(frame)}
+init();requestAnimationFrame(frame);
+</script>
+</body>
+</html>
